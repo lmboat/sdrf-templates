@@ -49,8 +49,9 @@ columns:
         params:
           ontologies:
             - ms
-          error_level: error
-          description: The instrument should be a valid MS ontology term
+            - pride
+          error_level: warning
+          description: The instrument should be a valid MS or PRIDE ontology term
           examples:
             - LTQ Orbitrap
             - Q Exactive
@@ -99,3 +100,137 @@ columns:
     type: integer
     allow_not_applicable: false
     allow_not_available: false
+
+  - name: comment[dissociation method]
+    description: Fragmentation method used in MS/MS
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: ontology
+        params:
+          ontologies:
+            - ms
+            - pride
+          parent_term: MS:1000044
+          error_level: warning
+          description: Dissociation method should be a child term of MS:1000044
+          examples:
+            - HCD
+            - CID
+            - ETD
+            - EThcD
+
+  - name: comment[fractionation method]
+    description: Peptide fractionation method used before MS analysis
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: ontology
+        params:
+          ontologies:
+            - pride
+          parent_term: PRIDE:0000550
+          error_level: warning
+          description: Fractionation method should be a child term of PRIDE:0000550
+          examples:
+            - High-pH reversed-phase chromatography (hpHRP)
+            - Strong cation-exchange chromatography (SCX)
+
+  - name: comment[collision energy]
+    description: Collision energy used for fragmentation
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: pattern
+        params:
+          pattern: ^\d+(\.\d+)?%?\s*(NCE|eV)(;\d+(\.\d+)?%?\s*(NCE|eV))*$|^stepped\s+.+$|^not available$
+          description: "Collision energy format: {value} {unit} where unit is NCE or eV. For stepped collision energies, use semicolon-separated values or 'stepped' prefix."
+          examples:
+            - 30 NCE
+            - 30% NCE
+            - 27 eV
+            - 25 NCE;27 NCE;30 NCE
+            - stepped 27+-6%
+            - not available
+
+  - name: comment[precursor mass tolerance]
+    description: Precursor mass tolerance for database search
+    requirement: recommended
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: pattern
+        params:
+          pattern: ^\d+(\.\d+)?\s*(ppm|Da)$
+          description: Mass tolerance with unit (ppm or Da)
+          examples:
+            - 10 ppm
+            - 20 ppm
+            - 0.5 Da
+
+  - name: comment[fragment mass tolerance]
+    description: Fragment mass tolerance for database search
+    requirement: recommended
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: pattern
+        params:
+          pattern: ^\d+(\.\d+)?\s*(ppm|Da)$
+          description: Mass tolerance with unit (ppm or Da)
+          examples:
+            - 0.02 Da
+            - 20 ppm
+
+  - name: comment[reduction reagent]
+    description: Chemical reagent used for disulfide bond reduction
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: ontology
+        params:
+          ontologies:
+            - pride
+            - ms
+          error_level: warning
+          description: Reduction reagent should be a valid PRIDE or MS ontology term
+          examples:
+            - dithiothreitol
+            - tris(2-carboxyethyl)phosphine
+
+  - name: comment[alkylation reagent]
+    description: Chemical reagent used for cysteine alkylation
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: ontology
+        params:
+          ontologies:
+            - pride
+            - ms
+          error_level: warning
+          description: Alkylation reagent should be a valid PRIDE or MS ontology term
+          examples:
+            - iodoacetamide
+            - chloroacetamide
+
+  - name: comment[depletion]
+    description: Whether abundant protein depletion was performed
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: values
+        params:
+          values:
+            - no depletion
+            - depletion
+            - not applicable
+            - not available
+          error_level: warning
+          description: Depletion status

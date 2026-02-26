@@ -32,7 +32,7 @@ columns:
 
   - name: characteristics[developmental stage]
     description: Developmental stage of the plant
-    requirement: recommended
+    requirement: required
     allow_not_applicable: true
     allow_not_available: true
     validators:
@@ -51,7 +51,7 @@ columns:
 
   - name: characteristics[strain/breed]
     description: Cultivar, ecotype, or accession of the plant
-    requirement: optional
+    requirement: required
     allow_not_applicable: true
     allow_not_available: true
     validators:
@@ -67,7 +67,7 @@ columns:
 
   - name: characteristics[growth conditions]
     description: Growth conditions for the plant
-    requirement: optional
+    requirement: recommended
     allow_not_applicable: true
     allow_not_available: true
     validators:
@@ -83,7 +83,7 @@ columns:
 
   - name: characteristics[treatment]
     description: Treatment applied to the plant
-    requirement: optional
+    requirement: recommended
     allow_not_applicable: true
     allow_not_available: true
     validators:
@@ -99,3 +99,17 @@ columns:
             - salt stress
             - pathogen infection
             - hormone treatment
+
+  - name: characteristics[biosample accession number]
+    description: BioSample accession number for the sample (e.g., SAMN or SAMEA identifiers)
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: pattern
+        params:
+          pattern: ^SAM[NED]A?\d+$|^not available$|^not applicable$
+          description: BioSample accession number
+          examples:
+            - SAMN12345678
+            - SAMEA12345678

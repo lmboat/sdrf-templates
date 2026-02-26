@@ -32,7 +32,7 @@ columns:
 
   - name: characteristics[developmental stage]
     description: Developmental stage of the organism
-    requirement: recommended
+    requirement: required
     allow_not_applicable: true
     allow_not_available: true
     validators:
@@ -51,7 +51,7 @@ columns:
 
   - name: characteristics[strain/breed]
     description: Strain or breed of the organism
-    requirement: optional
+    requirement: required
     allow_not_applicable: true
     allow_not_available: true
     validators:
@@ -68,7 +68,7 @@ columns:
 
   - name: characteristics[sex]
     description: Biological sex of the organism
-    requirement: optional
+    requirement: recommended
     allow_not_applicable: true
     allow_not_available: true
     validators:
@@ -82,3 +82,17 @@ columns:
             - not applicable
           error_level: warning
           description: Sex should be one of the allowed values
+
+  - name: characteristics[biosample accession number]
+    description: BioSample accession number for the sample (e.g., SAMN or SAMEA identifiers)
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: pattern
+        params:
+          pattern: ^SAM[NED]A?\d+$|^not available$|^not applicable$
+          description: BioSample accession number
+          examples:
+            - SAMN12345678
+            - SAMEA12345678

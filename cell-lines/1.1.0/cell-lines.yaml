@@ -29,7 +29,7 @@ columns:
             - A549
 
   - name: characteristics[disease]
-    description: Disease state of the original tissue from which the cell line was established
+    description: Disease state of the donor tissue from which the cell line was established
     requirement: required
     allow_not_applicable: true
     allow_not_available: true
@@ -132,3 +132,37 @@ columns:
             - STR profiling
             - SNP fingerprinting
             - cytogenetic analysis
+
+  - name: characteristics[culture medium]
+    description: Culture medium used to grow the cell line
+    requirement: recommended
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: ontology
+        params:
+          ontologies:
+            - ncit
+          error_level: warning
+          description: The culture medium should be a valid ontology term (NCIT:C85504 Growth Medium hierarchy)
+          examples:
+            - DMEM
+            - RPMI 1640
+            - MEM
+            - Ham's F-12
+
+  - name: characteristics[storage temperature]
+    description: Storage temperature of the cell line (in Celsius)
+    requirement: recommended
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: pattern
+        params:
+          pattern: ^-?\d+(\.\d+)?\s*°?C$|^not available$|^not applicable$
+          description: Storage temperature in Celsius (PRIDE:0000705)
+          examples:
+            - -80°C
+            - -196°C
+            - -150°C
+            - 37°C

@@ -1,6 +1,6 @@
 name: affinity-proteomics
 description: SDRF template for affinity-based proteomics experiments (Olink, SomaScan). This is the base template for all affinity proteomics experiments.
-version: 1.1.0
+version: 1.0.0
 extends: base
 usable_alone: true
 layer: technology
@@ -11,6 +11,24 @@ validators:
     params:
       min_columns: 8
 columns:
+  - name: characteristics[individual]
+    description: Unique identifier for the donor individual
+    requirement: required
+    allow_not_applicable: true
+    allow_not_available: true
+    allow_anonymized: true
+    allow_pooled: true
+    validators:
+      - validator_name: pattern
+        params:
+          pattern: ^([A-Za-z0-9_-]+|not applicable|not available|anonymized|pooled)$
+          description: Individual ID should be alphanumeric with underscores or hyphens. Use "anonymized" if redacted or "pooled" for pooled samples.
+          examples:
+            - sample_01
+            - donor-A1
+            - subject_12
+            - anonymized
+
   - name: comment[instrument]
     description: Affinity proteomics platform/instrument used for data acquisition
     requirement: required
@@ -27,7 +45,7 @@ columns:
           description: The instrument should be a valid PRIDE ontology term for affinity platforms
           examples:
             - Olink Explore HT
-            - Olink Signature Q100
+            - Olink Target 96
             - SomaScan Assay 7K
             - SomaScan Assay 11K
 
@@ -65,7 +83,7 @@ columns:
 
   - name: comment[quantification unit]
     description: Unit of quantification for the assay (platform-specific)
-    requirement: recommended
+    requirement: optional
     allow_not_applicable: true
     allow_not_available: true
     validators:
@@ -88,6 +106,7 @@ columns:
         params:
           values:
             - sample
+            - quality control sample
             - sample_control
             - negative_control
             - plate_control

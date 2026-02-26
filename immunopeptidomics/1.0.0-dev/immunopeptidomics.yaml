@@ -5,26 +5,8 @@ extends: ms-proteomics
 usable_alone: false
 layer: experiment
 columns:
-  - name: characteristics[cell line]
-    description: Cell line used for immunopeptidome analysis
-    requirement: recommended
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: ontology
-        params:
-          ontologies:
-            - clo
-            - bto
-          error_level: warning
-          description: The cell line should be a valid CLO or BTO term
-          examples:
-            - HeLa
-            - JY
-            - C1R
-
-  - name: characteristics[MHC class]
-    description: MHC class targeted for immunopeptidome enrichment
+  - name: characteristics[MHC protein complex]
+    description: MHC protein complex targeted for immunopeptidome enrichment (GO:0042611)
     requirement: required
     allow_not_applicable: false
     allow_not_available: false
@@ -32,13 +14,13 @@ columns:
       - validator_name: values
         params:
           values:
-            - MHC class I
-            - MHC class II
-            - MHC class I and II
-            - non-canonical
-            - not applicable
+            - MHC class I protein complex
+            - MHC class II protein complex
+            - non-classical MHC protein complex
+            - mutant MHC protein complex
+            - MHC protein complex with serotype
           error_level: error
-          description: MHC class should be specified
+          description: MHC protein complex type should be specified (MRO terms under GO:0042611)
 
   - name: characteristics[immunopeptidome enrichment method]
     description: Method used to enrich MHC-bound peptides
@@ -53,29 +35,31 @@ columns:
             - immunoaffinity purification (iodoacetamide)
             - mild acid elution
             - detergent lysis
-            - not applicable
           error_level: warning
           description: Enrichment method for immunopeptidome
 
-  - name: characteristics[MHC allele]
-    description: MHC alleles expressed by the sample. Use HLA notation for human (HLA-A*02:01), H-2 notation for mouse (H-2Kb, H-2Db), or appropriate notation for other species.
+  - name: characteristics[MHC typing]
+    description: MHC alleles expressed by the sample following IPD-MHC nomenclature (https://www.ebi.ac.uk/ipd/mhc/). Use IPD-IMGT/HLA notation for human (HLA-A*02:01), H-2 notation for mouse (H-2Kb, H-2Db), or appropriate IPD-MHC notation for other species. Multiple alleles can be separated by semicolons.
     requirement: recommended
     allow_not_applicable: true
     allow_not_available: true
     validators:
       - validator_name: pattern
         params:
-          pattern: ^(HLA-[A-Z]+\*?\d+:\d+|H-2[A-Z][a-z]?[0-9]*|not available|not applicable)
-          description: MHC allele notation (HLA for human, H-2 for mouse)
+          pattern: ^.+$
+          description: MHC allele notation (HLA for human, H-2 for mouse). Supports multi-allele (semicolon-separated), 2-4 field resolution.
           examples:
             - HLA-A*02:01
             - HLA-B*07:02
+            - HLA-A*02:01;HLA-B*07:02;HLA-C*07:02
+            - HLA-A*02:01:01
+            - HLA-A*02:01:01:01
             - H-2Kb
             - H-2Db
             - H-2IAb
 
   - name: characteristics[MHC typing method]
-    description: Method used for MHC/HLA typing
+    description: "MHC typing method used. Values mapped to NCIT where available: NGS-based typing (NCIT:C101293), sequence-based typing (NCIT:C130180), PCR-SSO (NCIT:C130181), PCR-SSP (NCIT:C130179), PCR-based genotyping (NCIT:C17003)"
     requirement: optional
     allow_not_applicable: true
     allow_not_available: true
@@ -83,49 +67,20 @@ columns:
       - validator_name: values
         params:
           values:
-            - NGS-based typing
-            - SSO typing
-            - SSP typing
-            - SBT typing
+            - NGS-based typing          # NCIT:C101293 (Next Generation Sequencing)
+            - sequence-based typing      # NCIT:C130180 (Sequence-based Typing)
+            - PCR-SSO                    # NCIT:C130181 (Sequence-specific Oligonucleotide Probe PCR)
+            - PCR-SSP                    # NCIT:C130179 (Allele Specific Primer PCR)
+            - PCR-based genotyping       # NCIT:C17003 (Polymerase Chain Reaction)
             - predicted from RNA-seq
-            - PCR-based genotyping
+            - inferred from mass spectrometry
             - inbred strain (known genotype)
             - not available
             - not applicable
           error_level: warning
-          description: MHC typing method used
+          description: "MHC typing method used. Values mapped to NCIT where available: NGS-based typing (NCIT:C101293), sequence-based typing (NCIT:C130180), PCR-SSO (NCIT:C130181), PCR-SSP (NCIT:C130179), PCR-based genotyping (NCIT:C17003)"
 
-  - name: comment[cell number]
-    description: Number of cells used for immunopeptidome extraction
-    requirement: optional
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: pattern
-        params:
-          pattern: ^\d+(\.\d+)?\s*(x\s*10\^?\d+)?$
-          description: Cell count
-          examples:
-            - 1e8
-            - 5 x 10^7
-            - 100000000
-
-  - name: comment[tissue mass]
-    description: Mass of tissue used for immunopeptidome extraction
-    requirement: optional
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: pattern
-        params:
-          pattern: ^\d+(\.\d+)?\s*(mg|g)$
-          description: Mass with unit
-          examples:
-            - 100 mg
-            - 1 g
-            - 500 mg
-
-  - name: comment[antibody used]
+  - name: characteristics[antibody used]
     description: Antibody clone used for MHC immunoprecipitation
     requirement: recommended
     allow_not_applicable: true
@@ -138,19 +93,3 @@ columns:
           examples:
             - W6/32
             - BB7.2
-            - L243
-
-  - name: comment[elution conditions]
-    description: Conditions used for peptide elution from MHC complexes
-    requirement: optional
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: pattern
-        params:
-          pattern: ^.+$
-          description: Elution conditions
-          examples:
-            - 0.1% TFA
-            - 10% acetic acid
-            - citrate buffer pH 3.3

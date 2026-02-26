@@ -99,6 +99,21 @@ columns:
             - 2
             - pooled
 
+  - name: characteristics[pooled sample]
+    description: Whether the sample is a pooled sample combining material from multiple biological sources
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: values
+        params:
+          values:
+            - yes
+            - no
+            - not applicable
+            - not available
+          error_level: warning
+
   - name: assay name
     description: Unique identifier for the data acquisition run
     requirement: required
@@ -137,7 +152,7 @@ columns:
 
   - name: comment[technical replicate]
     description: Identifier for the technical replicate (integer starting from 1)
-    requirement: recommended
+    requirement: required
     type: integer
     allow_not_applicable: false
     allow_not_available: false
@@ -213,3 +228,14 @@ columns:
           examples:
             - NT=Oxidation;MT=Variable;TA=M;AC=Unimod:35
             - NT=Carbamidomethyl;TA=C;MT=fixed;AC=UNIMOD:4
+
+  - name: comment[sdrf validation hash]
+    description: Hash value for SDRF validation integrity checking
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: pattern
+        params:
+          pattern: ^.+$
+          description: Validation hash string

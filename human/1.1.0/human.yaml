@@ -51,7 +51,7 @@ columns:
 
   - name: characteristics[age]
     description: Age of the donor at sample collection
-    requirement: recommended
+    requirement: required
     allow_not_applicable: false
     allow_not_available: true
     allow_anonymized: true
@@ -59,16 +59,17 @@ columns:
     validators:
       - validator_name: pattern
         params:
-          # Age format: number + unit (Y/M/D), optionally combined, with optional range
-          # Examples: 45Y, 6M, 30Y6M, 30Y6M15D, 40Y-50Y, 1Y-2Y6M
+          # Age format: number + unit in strict Y>M>W>D order, with optional range
+          # Examples: 45Y, 6M, 30Y6M, 30Y6M2W, 40Y-50Y, 1Y-2Y6M
           # Also allows "not available", "anonymized", or "pooled"
-          pattern: ^(\d+[yYmMdD](\d+[yYmMdD])*(-\d+[yYmMdD](\d+[yYmMdD])*)?|not available|anonymized|pooled)$
+          pattern: ^(\d+[Yy](\d+[Mm](\d+[Ww](\d+[Dd])?)?)?(-\d+[Yy](\d+[Mm](\d+[Ww](\d+[Dd])?)?)?)?|not available|anonymized|pooled)$
           case_sensitive: false
-          description: Age should be in format like 45Y, 6M, 30Y6M, or ranges like 40Y-50Y. Use "not available" if unknown, "anonymized" if redacted, or "pooled" for pooled samples.
+          description: Age should be in format like 45Y, 6M, 30Y6M (Y>M>W>D order), or ranges like 40Y-50Y. Use "not available" if unknown, "anonymized" if redacted, or "pooled" for pooled samples.
           examples:
             - 45Y
             - 6M
             - 30Y6M
+            - 30Y6M2W
             - 40Y-50Y
             - not available
             - anonymized
@@ -76,7 +77,7 @@ columns:
 
   - name: characteristics[sex]
     description: Biological sex of the donor
-    requirement: recommended
+    requirement: required
     allow_not_applicable: true
     allow_not_available: true
     allow_anonymized: true
@@ -132,3 +133,17 @@ columns:
             - subject_12
             - anonymized
             - pooled
+
+  - name: characteristics[biosample accession number]
+    description: BioSample accession number for the sample (e.g., SAMN or SAMEA identifiers)
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: pattern
+        params:
+          pattern: ^SAM[NED]A?\d+$|^not available$|^not applicable$
+          description: BioSample accession number
+          examples:
+            - SAMN12345678
+            - SAMEA12345678

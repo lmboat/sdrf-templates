@@ -32,7 +32,7 @@ columns:
 
   - name: characteristics[developmental stage]
     description: Developmental stage of the organism
-    requirement: recommended
+    requirement: required
     allow_not_applicable: true
     allow_not_available: true
     validators:
@@ -53,7 +53,7 @@ columns:
 
   - name: characteristics[strain/breed]
     description: Strain of the organism
-    requirement: optional
+    requirement: required
     allow_not_applicable: true
     allow_not_available: true
     validators:
@@ -83,3 +83,17 @@ columns:
             - wild type
             - daf-2(e1370)
             - w[*]; P{GAL4}
+
+  - name: characteristics[biosample accession number]
+    description: BioSample accession number for the sample (e.g., SAMN or SAMEA identifiers)
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: pattern
+        params:
+          pattern: ^SAM[NED]A?\d+$|^not available$|^not applicable$
+          description: BioSample accession number
+          examples:
+            - SAMN12345678
+            - SAMEA12345678
