@@ -25,7 +25,7 @@ columns:
             - Explore 3072
 
   - name: comment[olink platform]
-    description: Olink instrument/platform version
+    description: Olink platform version
     requirement: required
     allow_not_applicable: false
     allow_not_available: false
@@ -36,8 +36,6 @@ columns:
             - Olink Target 96
             - Olink Explore 384
             - Olink Explore HT
-            - Olink Signature Q100
-            - Olink Flex
             - Olink Reveal
           error_level: warning
           description: Olink platform
