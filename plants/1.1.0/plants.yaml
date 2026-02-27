@@ -51,7 +51,7 @@ columns:
 
   - name: characteristics[strain/breed]
     description: Cultivar, ecotype, or accession of the plant
-    requirement: required
+    requirement: recommended
     allow_not_applicable: true
     allow_not_available: true
     validators:
