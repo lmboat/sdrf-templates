@@ -1,0 +1,132 @@
+name: sample-metadata
+description: SDRF template with shared sample metadata columns (organism, tissue, disease). This is an internal construction layer inherited by technology and organism templates - not used directly.
+version: 1.0.0
+extends: base
+usable_alone: false
+layer: null
+
+columns:
+  - name: characteristics[organism]
+    description: Species of the sample using NCBI Taxonomy
+    requirement: required
+    allow_not_applicable: true
+    allow_not_available: false
+    validators:
+      - validator_name: ontology
+        params:
+          ontologies:
+            - ncbitaxon
+          error_level: error
+          description: The organism should be a valid NCBI Taxonomy term
+          examples:
+            - homo sapiens
+            - mus musculus
+            - rattus norvegicus
+            - saccharomyces cerevisiae
+
+  - name: characteristics[organism part]
+    description: Anatomical part of the organism from which sample was derived
+    requirement: required
+    cardinality: multiple
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: ontology
+        params:
+          ontologies:
+            - uberon
+            - bto
+          error_level: warning
+          description: The organism part should be a valid UBERON or BTO term
+          examples:
+            - liver
+            - brain
+            - heart
+            - blood
+
+  - name: characteristics[cell type]
+    description: Cell type of the sample
+    requirement: recommended
+    cardinality: multiple
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: ontology
+        params:
+          ontologies:
+            - cl
+            - bto
+            - clo
+          error_level: warning
+          description: The cell type should be a valid Cell Ontology (CL), BRENDA Tissue Ontology (BTO), or Cell Line Ontology (CLO) term
+          examples:
+            - hepatocyte
+            - neuron
+            - fibroblast
+            - T cell
+
+  - name: characteristics[biological replicate]
+    description: Identifier for the biological replicate (integer starting from 1, or 'pooled' for pooled samples)
+    requirement: required
+    allow_not_applicable: false
+    allow_not_available: false
+    allow_pooled: true
+    validators:
+      - validator_name: pattern
+        params:
+          pattern: ^\d+$|^pooled$
+          description: Biological replicate should be an integer or 'pooled' for pooled reference samples
+          examples:
+            - 1
+            - 2
+            - pooled
+
+  - name: characteristics[pooled sample]
+    description: Whether the sample is a pooled sample combining material from multiple biological sources
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: values
+        params:
+          values:
+            - yes
+            - no
+          error_level: warning
+
+  - name: characteristics[disease]
+    description: Disease state of the sample
+    requirement: recommended
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: ontology
+        params:
+          ontologies:
+            - mondo
+            - efo
+            - doid
+            - pato
+          error_level: warning
+          description: The disease should be a valid MONDO, EFO, DOID, or PATO ontology term. Use 'normal' (PATO:0000461) for healthy samples.
+          examples:
+            - normal
+            - breast cancer
+            - infection
+            - metabolic disease
+
+  - name: characteristics[biosample accession number]
+    description: BioSample accession number for the sample (e.g., SAMN or SAMEA identifiers)
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: accession
+        params:
+          format: biosample
+          error_level: error
+          description: BioSample accession
+          examples:
+            - SAMN12345678
+            - SAMEA12345678
+            - SAMD1234567

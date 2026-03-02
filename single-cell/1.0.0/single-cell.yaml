@@ -5,7 +5,7 @@ extends: ms-proteomics
 usable_alone: false
 layer: experiment
 columns:
-  # Core columns inherited from ms-proteomics/base: organism, organism part, cell type, biological replicate
+  # Core columns inherited from ms-proteomics/sample-metadata/base: organism, organism part, cell type, biological replicate
   # Disease and organism-specific columns come from sample templates (human, vertebrates, etc.)
 
   # ==========================================================================
@@ -79,18 +79,6 @@ columns:
   - name: comment[sample preparation batch]
     description: Batch identifier for sample preparation (plate, chip, processing batch). Critical for batch effect correction.
     requirement: recommended
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: pattern
-        params:
-          pattern: ^.+$
-          description: Sample preparation batch identifier
-          examples:
-            - plate1
-            - plate2
-            - chip_A
-            - batch_20220601
 
   - name: comment[cells per well]
     description: Number of cells per well/reaction. Use 1 for true single cells, higher numbers for small pools.
@@ -229,42 +217,6 @@ columns:
           description: Single cell quality assessment
 
   # ==========================================================================
-  # OPTIONAL COLUMNS - Model Organisms
-  # ==========================================================================
-
-  - name: characteristics[genotype]
-    description: Genotype of the organism (especially for model organisms)
-    requirement: optional
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: pattern
-        params:
-          pattern: ^.+$
-          description: Genotype notation following standard conventions
-          examples:
-            - wild type genotype
-            - Pitx2-/-
-            - GFP+
-            - daf-2(e1370)
-
-  - name: characteristics[strain/breed]
-    description: Strain or genetic background of model organisms
-    requirement: optional
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: pattern
-        params:
-          pattern: ^.+$
-          description: Strain name
-          examples:
-            - C57BL/6
-            - BALB/c
-            - CD1
-            - Sprague-Dawley
-
-  # ==========================================================================
   # OPTIONAL COLUMNS - Carrier and Multiplexing (for SCoPE-MS type methods)
   # ==========================================================================
 
@@ -311,40 +263,6 @@ columns:
           examples:
             - TMT127N
             - TMT134N
-
-  # ==========================================================================
-  # OPTIONAL COLUMNS - Batch and Technical Tracking
-  # ==========================================================================
-
-  - name: comment[LC batch]
-    description: Liquid chromatography batch identifier for batch effect tracking
-    requirement: optional
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: pattern
-        params:
-          pattern: ^.+$
-          description: LC batch identifier
-          examples:
-            - LC1
-            - LC2
-            - column_A
-
-  - name: comment[acquisition date]
-    description: Date and time of MS data acquisition (ISO 8601 format recommended)
-    requirement: optional
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: pattern
-        params:
-          pattern: ^.+$
-          description: Acquisition date/time
-          examples:
-            - 2022-06-01_18:28:37
-            - 2022-06-01
-            - 20220601
 
   # ==========================================================================
   # OPTIONAL COLUMNS - Spatial Information

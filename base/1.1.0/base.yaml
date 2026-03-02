@@ -1,5 +1,5 @@
 name: base
-description: Base SDRF template with shared columns inherited by all proteomics templates. This is a construction artifact and cannot be used directly - use ms-proteomics or affinity-proteomics instead.
+description: Base SDRF template with infrastructure columns (identifiers, data files, versioning) inherited by all proteomics templates. This is a construction artifact and cannot be used directly.
 version: 1.1.0
 usable_alone: false
 validators:
@@ -23,94 +23,6 @@ columns:
     requirement: required
     allow_not_applicable: false
     allow_not_available: false
-
-  - name: characteristics[organism]
-    description: Species of the sample using NCBI Taxonomy
-    requirement: required
-    allow_not_applicable: true
-    allow_not_available: false
-    validators:
-      - validator_name: ontology
-        params:
-          ontologies:
-            - ncbitaxon
-          error_level: error
-          description: The organism should be a valid NCBI Taxonomy term
-          examples:
-            - homo sapiens
-            - mus musculus
-            - rattus norvegicus
-            - saccharomyces cerevisiae
-
-  - name: characteristics[organism part]
-    description: Anatomical part of the organism from which sample was derived
-    requirement: required
-    cardinality: multiple
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: ontology
-        params:
-          ontologies:
-            - uberon
-            - bto
-          error_level: warning
-          description: The organism part should be a valid UBERON or BTO term
-          examples:
-            - liver
-            - brain
-            - heart
-            - blood
-
-  - name: characteristics[cell type]
-    description: Cell type of the sample
-    requirement: recommended
-    cardinality: multiple
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: ontology
-        params:
-          ontologies:
-            - cl
-            - bto
-            - clo
-          error_level: warning
-          description: The cell type should be a valid Cell Ontology (CL), BRENDA Tissue Ontology (BTO), or Cell Line Ontology (CLO) term
-          examples:
-            - hepatocyte
-            - neuron
-            - fibroblast
-            - T cell
-
-  - name: characteristics[biological replicate]
-    description: Identifier for the biological replicate (integer starting from 1, or 'pooled' for pooled samples)
-    requirement: required
-    allow_not_applicable: false
-    allow_not_available: false
-    allow_pooled: true
-    validators:
-      - validator_name: pattern
-        params:
-          pattern: ^\d+$|^pooled$
-          description: Biological replicate should be an integer or 'pooled' for pooled reference samples
-          examples:
-            - 1
-            - 2
-            - pooled
-
-  - name: characteristics[pooled sample]
-    description: Whether the sample is a pooled sample combining material from multiple biological sources
-    requirement: optional
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: values
-        params:
-          values:
-            - yes
-            - no
-          error_level: warning
 
   - name: assay name
     description: Unique identifier for the data acquisition run

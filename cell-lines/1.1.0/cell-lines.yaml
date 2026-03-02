@@ -1,7 +1,7 @@
 name: cell-lines
 description: SDRF template for cell line samples with Cellosaurus-based annotation. Cell lines can originate from any organism - combine with appropriate organism template (human for HeLa, vertebrates for NIH 3T3, invertebrates for Sf9).
 version: 1.1.0
-extends: base
+extends: sample-metadata
 usable_alone: false
 layer: experiment
 requires:
@@ -31,22 +31,6 @@ columns:
   - name: characteristics[disease]
     description: Disease state of the donor tissue from which the cell line was established
     requirement: required
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: ontology
-        params:
-          ontologies:
-            - mondo
-            - efo
-            - doid
-            - pato
-          error_level: warning
-          description: The disease should be a valid MONDO, EFO, DOID, or PATO ontology term. Use 'normal' (PATO:0000461) if applicable.
-          examples:
-            - cervical adenocarcinoma
-            - chronic myelogenous leukemia
-            - normal
 
   - name: characteristics[cellosaurus accession]
     description: Cellosaurus accession number for the cell line

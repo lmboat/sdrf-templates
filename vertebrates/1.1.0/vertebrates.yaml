@@ -1,7 +1,7 @@
 name: vertebrates
 description: SDRF template for non-human vertebrate samples (mammals, birds, fish, reptiles, amphibians). Must be combined with a technology template (ms-proteomics or affinity-proteomics).
 version: 1.1.0
-extends: base
+extends: sample-metadata
 usable_alone: false
 layer: sample
 mutually_exclusive_with:
@@ -10,25 +10,7 @@ mutually_exclusive_with:
   - plants
 columns:
   - name: characteristics[disease]
-    description: Disease state of the sample
     requirement: required
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: ontology
-        params:
-          ontologies:
-            - mondo
-            - efo
-            - doid
-            - pato
-          error_level: warning
-          description: The disease should be a valid MONDO, EFO, DOID, or PATO ontology term. Use 'normal' (PATO:0000461) for healthy samples.
-          examples:
-            - normal
-            - cancer
-            - infection
-            - metabolic disease
 
   - name: characteristics[developmental stage]
     description: Developmental stage of the organism
@@ -81,18 +63,3 @@ columns:
           error_level: warning
           description: Sex should be one of the allowed values
 
-  - name: characteristics[biosample accession number]
-    description: BioSample accession number for the sample (e.g., SAMN or SAMEA identifiers)
-    requirement: optional
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: accession
-        params:
-          format: biosample
-          error_level: error
-          description: BioSample accession
-          examples:
-            - SAMN12345678
-            - SAMEA12345678
-            - SAMD1234567

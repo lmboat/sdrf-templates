@@ -9,7 +9,7 @@ templates:
     latest: 1.0.0
     versions:
     - 1.0.0
-    extends: base
+    extends: sample-metadata
     usable_alone: true
     layer: technology
     description: SDRF template for affinity-based proteomics experiments (Olink, SomaScan).
@@ -21,14 +21,14 @@ templates:
     extends: null
     usable_alone: false
     layer: null
-    description: Base SDRF template with shared columns inherited by all proteomics
-      templates. This is a construction artifact and cannot be used directly - use
-      ms-proteomics or affinity-proteomics instead.
+    description: Base SDRF template with infrastructure columns (identifiers, data
+      files, versioning) inherited by all proteomics templates. This is a construction
+      artifact and cannot be used directly.
   cell-lines:
     latest: 1.1.0
     versions:
     - 1.1.0
-    extends: base
+    extends: sample-metadata
     usable_alone: false
     layer: experiment
     description: SDRF template for cell line samples with Cellosaurus-based annotation.
@@ -56,7 +56,7 @@ templates:
     latest: 1.1.0
     versions:
     - 1.1.0
-    extends: base
+    extends: sample-metadata
     usable_alone: false
     layer: sample
     description: Human SDRF template with human-specific sample metadata fields. Must
@@ -75,7 +75,7 @@ templates:
     latest: 1.1.0
     versions:
     - 1.1.0
-    extends: base
+    extends: sample-metadata
     usable_alone: false
     layer: sample
     description: SDRF template for invertebrate samples (Drosophila, C. elegans, insects,
@@ -93,7 +93,7 @@ templates:
     latest: 1.1.0
     versions:
     - 1.1.0
-    extends: base
+    extends: sample-metadata
     usable_alone: true
     layer: technology
     description: Base SDRF template for mass spectrometry-based proteomics. This is
@@ -111,11 +111,21 @@ templates:
     latest: 1.1.0
     versions:
     - 1.1.0
-    extends: base
+    extends: sample-metadata
     usable_alone: false
     layer: sample
     description: SDRF template for plant samples (Arabidopsis, crops, etc.). Must
       be combined with a technology template (ms-proteomics or affinity-proteomics).
+  sample-metadata:
+    latest: 1.0.0
+    versions:
+    - 1.0.0
+    extends: base
+    usable_alone: false
+    layer: null
+    description: SDRF template with shared sample metadata columns (organism, tissue,
+      disease). This is an internal construction layer inherited by technology and organism
+      templates - not used directly.
   single-cell:
     latest: 1.0.0
     versions:
@@ -140,7 +150,7 @@ templates:
     latest: 1.1.0
     versions:
     - 1.1.0
-    extends: base
+    extends: sample-metadata
     usable_alone: false
     layer: sample
     description: SDRF template for non-human vertebrate samples (mammals, birds, fish,

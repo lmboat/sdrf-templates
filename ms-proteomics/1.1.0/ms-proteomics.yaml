@@ -1,7 +1,7 @@
 name: ms-proteomics
 description: Base SDRF template for mass spectrometry-based proteomics. This is the minimum valid template for any MS experiment.
 version: 1.1.0
-extends: base
+extends: sample-metadata
 usable_alone: true
 layer: technology
 mutually_exclusive_with:
@@ -281,3 +281,46 @@ columns:
             - orbitrap
             - ion trap
             - TOF
+
+  - name: comment[sample preparation batch]
+    description: Batch identifier for sample preparation (plate, chip, processing batch). Useful for batch effect correction in multi-batch experiments.
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: pattern
+        params:
+          pattern: ^.+$
+          description: Sample preparation batch identifier
+          examples:
+            - plate1
+            - batch_20220601
+            - prep_A
+
+  - name: comment[LC batch]
+    description: Liquid chromatography batch identifier for batch effect tracking (e.g., column changes, LC system swaps)
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: pattern
+        params:
+          pattern: ^.+$
+          description: LC batch identifier
+          examples:
+            - LC1
+            - column_A
+
+  - name: comment[acquisition date]
+    description: Date of MS data acquisition (ISO 8601 format recommended). Useful for tracking instrument drift and batch effects.
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: pattern
+        params:
+          pattern: ^.+$
+          description: Acquisition date/time
+          examples:
+            - 2022-06-01
+            - 2022-06-01_18:28:37
