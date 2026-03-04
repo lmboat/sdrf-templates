@@ -298,7 +298,7 @@ columns:
   # ==========================================================================
 
   - name: comment[facs nozzle size]
-    ontology_accession: PRIDE:0000961
+    ontology_accession: PRIDE:0000981
     description: Nozzle diameter used for FACS-based single cell isolation (in micrometers)
     requirement: optional
     allow_not_applicable: true
@@ -315,7 +315,7 @@ columns:
             - 130 μm
 
   - name: comment[facs sorting mode]
-    ontology_accession: PRIDE:0000962
+    ontology_accession: PRIDE:0000982
     description: Sorting mode used during FACS isolation
     requirement: optional
     allow_not_applicable: true
@@ -332,7 +332,7 @@ columns:
           description: FACS sorting mode
 
   - name: comment[microfluidics chip type]
-    ontology_accession: PRIDE:0000963
+    ontology_accession: PRIDE:0000983
     description: Type and manufacturer of the microfluidics chip used for single cell isolation
     requirement: optional
     allow_not_applicable: true
@@ -348,7 +348,7 @@ columns:
             - nanowell chip
 
   - name: comment[lcm microscope model]
-    ontology_accession: PRIDE:0000964
+    ontology_accession: PRIDE:0000984
     description: Model of the laser capture microdissection microscope used for cell isolation
     requirement: optional
     allow_not_applicable: true
@@ -364,7 +364,7 @@ columns:
             - Thermo LCM
 
   - name: comment[nanopots chip version]
-    ontology_accession: PRIDE:0000965
+    ontology_accession: PRIDE:0000985
     description: Version of the nanoPOTS chip used for single cell sample preparation
     requirement: optional
     allow_not_applicable: true
