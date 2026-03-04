@@ -1,5 +1,31 @@
 name: cell-lines
 description: SDRF template for cell line samples with Cellosaurus-based annotation. Cell lines can originate from any organism - combine with appropriate organism template (human for HeLa, vertebrates for NIH 3T3, invertebrates for Sf9).
+documentation: |
+  The cell-lines template provides standardized annotation for cultured cell lines using
+  Cellosaurus as the primary reference database.
+
+  Required combination: technology template + organism template (based on cell line origin).
+  Example: HeLa study = cell-lines + human + ms-proteomics.
+
+  Key guidance:
+  - `characteristics[cellosaurus accession]`: Required. Look up accessions at
+    https://www.cellosaurus.org/. Format: CVCL_XXXX (e.g., CVCL_0030 for HeLa).
+  - `characteristics[cell line]`: Required. Use standard cell line names from CLO/BTO/EFO.
+  - `characteristics[disease]`: Required. The disease of the donor tissue from which the
+    cell line was originally derived. Use `normal` for non-disease-derived cell lines.
+  - `comment[passage number]`: Recommended. Document passage for reproducibility.
+    Passage drift can significantly affect proteomics results.
+  - `characteristics[culture medium]`: Recommended. Use NCIT terms (DMEM, RPMI 1640).
+  - `characteristics[cell line authentication]`: Optional but encouraged. STR profiling
+    is the gold standard for human cell lines.
+contributors:
+  - Yasset Perez-Riverol (yperez@ebi.ac.uk) - EMBL-EBI
+  - Deepti Jaiswal Kundu (jaiswal@ebi.ac.uk) - EMBL-EBI
+  - Nithu Sara John (nithu@ebi.ac.uk) - EMBL-EBI
+  - Nandana Madhusoodanan (nandana@ebi.ac.uk) - EMBL-EBI
+  - Asier Larrea (alarre@ebi.ac.uk) - EMBL-EBI
+  - Toan Phung (TPhung001@dundee.ac.uk) - University of Dundee
+  - Timo Sachsenberg (timo.sachsenberg@uni-tuebingen.de) - University of Tübingen
 version: 1.1.0
 extends: sample-metadata
 usable_alone: false
@@ -9,6 +35,7 @@ requires:
   - layer: sample       # human, vertebrates, or invertebrates (based on cell line origin)
 columns:
   - name: characteristics[cell line]
+    ontology_accession: CLO:0000031
     description: Name of the cell line
     requirement: required
     allow_not_applicable: false
@@ -29,14 +56,16 @@ columns:
             - A549
 
   - name: characteristics[disease]
+    ontology_accession: OGMS:0000031
     description: Disease state of the donor tissue from which the cell line was established
     requirement: required
 
   - name: characteristics[cellosaurus accession]
+    ontology_accession: PRIDE:0000835
     description: Cellosaurus accession number for the cell line
     requirement: required
     allow_not_applicable: false
-    allow_not_available: false
+    allow_not_available: true
     validators:
       - validator_name: accession
         params:
@@ -48,12 +77,14 @@ columns:
             - CVCL_0004
 
   - name: characteristics[cellosaurus name]
+    ontology_accession: PRIDE:0000836
     description: Official Cellosaurus name for the cell line
     requirement: recommended
     allow_not_applicable: false
-    allow_not_available: false
+    allow_not_available: true
 
   - name: characteristics[sampling site]
+    ontology_accession: EFO:0000688
     description: Tissue or organ from which the cell line was derived
     requirement: optional
     allow_not_applicable: true
@@ -72,6 +103,7 @@ columns:
             - breast
 
   - name: comment[passage number]
+    ontology_accession: EFO:0007061
     description: Passage number of the cell line used in the experiment
     requirement: recommended
     allow_not_applicable: true
@@ -86,8 +118,9 @@ columns:
             - 15-20
             - 5
 
-  - name: comment[cell line source]
-    description: Repository or source from which the cell line was obtained
+  - name: comment[biorepository]
+    ontology_accession: NCIT:C48800
+    description: BioBank or source from which the cell line was obtained
     requirement: optional
     allow_not_applicable: true
     allow_not_available: true
@@ -102,7 +135,8 @@ columns:
             - ECACC
             - Sigma-Aldrich
 
-  - name: comment[authentication method]
+  - name: characteristics[cell line authentication]
+    ontology_accession: PRIDE:0000955
     description: Method used to authenticate the cell line identity
     requirement: optional
     allow_not_applicable: true
@@ -118,6 +152,7 @@ columns:
             - cytogenetic analysis
 
   - name: characteristics[culture medium]
+    ontology_accession: OBI:0000079
     description: Culture medium used to grow the cell line
     requirement: recommended
     allow_not_applicable: true
@@ -135,7 +170,46 @@ columns:
             - MEM
             - Ham's F-12
 
-  - name: characteristics[storage temperature]
+  - name: characteristics[developmental stage]
+    ontology_accession: EFO:0000399
+    description: Developmental stage of the donor from which the cell line was derived
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: ontology
+        params:
+          ontologies:
+            - efo
+          error_level: warning
+          description: The developmental stage should be a valid EFO ontology term
+          examples:
+            - adult
+            - embryonic
+            - fetal
+            - neonatal
+
+  - name: characteristics[ancestry category]
+    ontology_accession: HANCESTRO:0004
+    description: Ancestry category of the cell line donor (if known)
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: ontology
+        params:
+          ontologies:
+            - hancestro
+          error_level: warning
+          description: The ancestry category should be a valid HANCESTRO term
+          examples:
+            - European
+            - African
+            - East Asian
+            - South Asian
+
+  - name: characteristics[sample storage temperature]
+    ontology_accession: PRIDE:0000705
     description: Storage temperature of the cell line (in Celsius)
     requirement: recommended
     allow_not_applicable: true

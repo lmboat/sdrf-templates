@@ -12,6 +12,7 @@ templates:
     extends: sample-metadata
     usable_alone: true
     layer: technology
+    exclusive_with: [ms-proteomics]
     description: SDRF template for affinity-based proteomics experiments (Olink, SomaScan).
       This is the base template for all affinity proteomics experiments.
   base:
@@ -24,6 +25,16 @@ templates:
     description: Base SDRF template with infrastructure columns (identifiers, data
       files, versioning) inherited by all proteomics templates. This is a construction
       artifact and cannot be used directly.
+  clinical-metadata:
+    latest: 1.0.0
+    versions:
+    - 1.0.0
+    extends: sample-metadata
+    usable_alone: false
+    layer: sample
+    description: SDRF template for clinical study samples with treatment, demographics,
+      and lifestyle metadata. Applicable to any organism. Combine with organism template
+      (human, vertebrates) and technology template (ms-proteomics, affinity-proteomics).
   cell-lines:
     latest: 1.1.0
     versions:
@@ -31,6 +42,7 @@ templates:
     extends: sample-metadata
     usable_alone: false
     layer: experiment
+    requires: [ms-proteomics, affinity-proteomics]
     description: SDRF template for cell line samples with Cellosaurus-based annotation.
       Cell lines can originate from any organism - combine with appropriate organism
       template (human for HeLa, vertebrates for NIH 3T3, invertebrates for Sf9).
@@ -59,6 +71,8 @@ templates:
     extends: sample-metadata
     usable_alone: false
     layer: sample
+    exclusive_with: [vertebrates, invertebrates, plants]
+    requires: [ms-proteomics, affinity-proteomics]
     description: Human SDRF template with human-specific sample metadata fields. Must
       be combined with a technology template (ms-proteomics or affinity-proteomics).
   immunopeptidomics:
@@ -78,6 +92,8 @@ templates:
     extends: sample-metadata
     usable_alone: false
     layer: sample
+    exclusive_with: [human, vertebrates, plants]
+    requires: [ms-proteomics, affinity-proteomics]
     description: SDRF template for invertebrate samples (Drosophila, C. elegans, insects,
       etc.). Must be combined with a technology template (ms-proteomics or affinity-proteomics).
   metaproteomics:
@@ -96,8 +112,19 @@ templates:
     extends: sample-metadata
     usable_alone: true
     layer: technology
+    exclusive_with: [affinity-proteomics]
     description: Base SDRF template for mass spectrometry-based proteomics. This is
       the minimum valid template for any MS experiment.
+  oncology-metadata:
+    latest: 1.0.0
+    versions:
+    - 1.0.0
+    extends: clinical-metadata
+    usable_alone: false
+    layer: sample
+    description: SDRF template for cancer/oncology study samples with tumor staging,
+      grading, and clinical outcome metadata. Extends clinical-metadata with oncology-specific
+      columns. Combine with organism template and technology template.
   olink:
     latest: 1.0.0
     versions:
@@ -105,6 +132,7 @@ templates:
     extends: affinity-proteomics
     usable_alone: false
     layer: experiment
+    exclusive_with: [somascan]
     description: SDRF template for Olink Proximity Extension Assay (PEA) experiments.
       Extends affinity-proteomics with Olink-specific columns.
   plants:
@@ -114,6 +142,8 @@ templates:
     extends: sample-metadata
     usable_alone: false
     layer: sample
+    exclusive_with: [human, vertebrates, invertebrates]
+    requires: [ms-proteomics, affinity-proteomics]
     description: SDRF template for plant samples (Arabidopsis, crops, etc.). Must
       be combined with a technology template (ms-proteomics or affinity-proteomics).
   sample-metadata:
@@ -144,6 +174,7 @@ templates:
     extends: affinity-proteomics
     usable_alone: false
     layer: experiment
+    exclusive_with: [olink]
     description: SDRF template for SomaScan aptamer-based proteomics experiments.
       Extends affinity-proteomics with SomaScan-specific columns.
   vertebrates:
@@ -153,6 +184,8 @@ templates:
     extends: sample-metadata
     usable_alone: false
     layer: sample
+    exclusive_with: [human, invertebrates, plants]
+    requires: [ms-proteomics, affinity-proteomics]
     description: SDRF template for non-human vertebrate samples (mammals, birds, fish,
       reptiles, amphibians). Must be combined with a technology template (ms-proteomics
       or affinity-proteomics).

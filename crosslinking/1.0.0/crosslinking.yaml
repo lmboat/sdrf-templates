@@ -1,37 +1,63 @@
 name: crosslinking
 description: SDRF template for crosslinking mass spectrometry (XL-MS) experiments. Extends ms-proteomics with crosslinking-specific columns for data analysis.
+documentation: |
+  The crosslinking template adds XL-MS-specific columns for structural proteomics studies.
+  Cross-linker identity and enrichment are required for proper data interpretation.
+
+  Key guidance:
+  - `comment[cross-linker]`: Required. Use structured format with ontology accession:
+    `NT=DSS;AC=XLMOD:02001` for simple notation, or extended format with cleavability,
+    target residues, and mass: `NT=DSSO;AC=XLMOD:02010;CL=yes;TA=K,S,T,Y,nterm;MH=54.01;ML=85.98`.
+  - `characteristics[enrichment process]`: Required. Must be `enrichment of cross-linked peptides`.
+  - `comment[dissociation method]`: Required (overridden from ms-proteomics recommended).
+    Dissociation method critically affects cleavable linker stub ion generation.
+    Common: HCD, CID, ETD, EThcD, stepped HCD.
+  - `comment[collision energy]`: Recommended. Stepped collision energies are common for
+    cleavable linkers (e.g., `25 NCE;27 NCE;30 NCE`).
+  - `characteristics[crosslink distance]`: Maximum Calpha-Calpha distance constraint in
+    Angstroms (30 A for DSS/BS3, 26.4 A for DSSO, 11.4 A for EDC zero-length).
+  - `comment[crosslinker to protein ratio]`: Molar ratio (50:1, 100:1).
+
+  Common cross-linkers: DSS (XLMOD:02001), BS3 (XLMOD:02000), DSSO (XLMOD:02010, cleavable),
+  EDC (XLMOD:02009, zero-length).
+contributors:
+  - Yasset Perez-Riverol (yperez@ebi.ac.uk) - EMBL-EBI
+  - Deepti Jaiswal Kundu (jaiswal@ebi.ac.uk) - EMBL-EBI
+  - Nithu Sara John (nithu@ebi.ac.uk) - EMBL-EBI
+  - Nandana Madhusoodanan (nandana@ebi.ac.uk) - EMBL-EBI
+  - Asier Larrea (alarre@ebi.ac.uk) - EMBL-EBI
+  - Toan Phung (TPhung001@dundee.ac.uk) - University of Dundee
+  - Timo Sachsenberg (timo.sachsenberg@uni-tuebingen.de) - University of Tübingen
 version: 1.0.0
 extends: ms-proteomics
 usable_alone: false
 layer: experiment
 columns:
+  - name: comment[chemical cross-linking coupled with MS]
+    ontology_accession: PRIDE:0000430
+    description: MS-based cross-linking methodology used to identify this as a crosslinking dataset
+    requirement: recommended
+    allow_not_applicable: false
+    allow_not_available: false
+    validators:
+      - validator_name: values
+        params:
+          values:
+            - cross-linking mass spectrometry
+          error_level: warning
+          description: Cross-linking MS methodology
+
   # =============================================================================
   # REQUIRED COLUMNS - Essential for XL-MS data analysis
   # =============================================================================
 
-  # Sample-level: indicates this is a crosslinked sample
+  # Enrichment process inherited from sample-metadata, overridden to recommended for XL-MS
   - name: characteristics[enrichment process]
-    description: |
-      Indicates the sample enrichment strategy. For crosslinking experiments,
-      use "enrichment of cross-linked peptides" (PRIDE:0000838) to identify crosslinked samples.
-    requirement: required
-    allow_not_applicable: false
-    allow_not_available: false
-    validators:
-      - validator_name: ontology
-        params:
-          ontologies:
-            - pride
-            - efo
-          parent_term: EFO:0009090
-          error_level: error
-          description: Enrichment type should be a child term of EFO:0009090 (enrichment process)
-          examples:
-            - enrichment of cross-linked peptides
-            - enrichment of phosphorylated protein
+    requirement: recommended
 
   # Data acquisition: crosslinker details
   - name: comment[cross-linker]
+    ontology_accession: XLMOD:00004
     description: |
       Cross-linker compound with structured properties for analysis tools.
       Format: NT=name;AC=accession;CL=cleavable;TA=targets;MH/ML=stub masses
@@ -57,6 +83,7 @@ columns:
             - "NT=EDC;AC=XLMOD:02009;CL=no;TA=K,D,E"
 
   - name: comment[dissociation method]
+    ontology_accession: MS:1000044
     description: |
       Fragmentation method used in MS2. Critical for cleavable crosslinkers (DSSO, DSBU)
       which generate diagnostic stub ions under specific fragmentation conditions.
@@ -84,6 +111,7 @@ columns:
   # =============================================================================
 
   - name: comment[collision energy]
+    ontology_accession: MS:1000045
     description: Collision energy used for fragmentation. Important for cleavable crosslinker analysis.
     requirement: recommended
     allow_not_applicable: true
@@ -102,6 +130,7 @@ columns:
             - stepped 27+-6%
 
   - name: comment[crosslink enrichment method]
+    ontology_accession: PRIDE:0000838
     description: Method used to enrich crosslinked peptides before MS analysis
     requirement: recommended
     allow_not_applicable: true
@@ -124,24 +153,8 @@ columns:
   # OPTIONAL COLUMNS - Sample preparation details (not required for analysis)
   # =============================================================================
 
-  - name: characteristics[crosslink type]
-    description: Type of crosslinker chemistry (can be derived from reagent)
-    requirement: optional
-    allow_not_applicable: false
-    allow_not_available: false
-    validators:
-      - validator_name: values
-        params:
-          values:
-            - homo-bifunctional
-            - hetero-bifunctional
-            - zero-length
-            - photo-reactive
-            - MS-cleavable
-          error_level: warning
-          description: Type of crosslinker chemistry
-
   - name: characteristics[crosslink distance]
+    ontology_accession: PRIDE:0000948
     description: Maximum Cα-Cα distance constraint provided by the crosslinker (for structural interpretation)
     requirement: optional
     allow_not_applicable: true
@@ -158,6 +171,7 @@ columns:
             - 11.4 A
 
   - name: comment[crosslinker concentration]
+    ontology_accession: PRIDE:0000951
     description: Concentration of crosslinking reagent used
     requirement: optional
     allow_not_applicable: true
@@ -174,6 +188,7 @@ columns:
             - 1 mM
 
   - name: characteristics[crosslinking reaction time]
+    ontology_accession: PRIDE:0000949
     description: Duration of the crosslinking reaction
     requirement: optional
     allow_not_applicable: true
@@ -190,6 +205,7 @@ columns:
             - 45 min
 
   - name: characteristics[crosslinking temperature]
+    ontology_accession: PRIDE:0000950
     description: Temperature at which crosslinking was performed
     requirement: optional
     allow_not_applicable: true
@@ -209,6 +225,7 @@ columns:
             - room temperature
 
   - name: comment[crosslinker to protein ratio]
+    ontology_accession: PRIDE:0000952
     description: Molar ratio of crosslinker to protein
     requirement: optional
     allow_not_applicable: true
@@ -224,6 +241,7 @@ columns:
             - 1:1 w/w
 
   - name: comment[quenching reagent]
+    ontology_accession: PRIDE:0000953
     description: Reagent used to quench the crosslinking reaction
     requirement: optional
     allow_not_applicable: true

@@ -1,5 +1,30 @@
 name: base
 description: Base SDRF template with infrastructure columns (identifiers, data files, versioning) inherited by all proteomics templates. This is a construction artifact and cannot be used directly.
+documentation: |
+  The base template provides the foundational columns inherited by every SDRF file.
+  It is never used directly — all other templates inherit from it through sample-metadata.
+
+  Key conventions:
+  - `source name` must be unique per biological sample across the entire SDRF file.
+  - `assay name` must be unique per data acquisition run.
+  - `comment[data file]` must exactly match the filename deposited in the data repository.
+  - `comment[technical replicate]` starts at 1 for each biological sample.
+  - `comment[sdrf template]` records which templates were combined, using format
+    `NT=template_name;VV=vX.Y.Z` or `template_name vX.Y.Z`.
+
+  Validation rules enforced at this level:
+  - No trailing whitespace in any cell.
+  - No empty cells allowed.
+  - The combination of source name + assay name must be unique (no duplicate rows).
+  - Column order must follow the template definition order.
+contributors:
+  - Yasset Perez-Riverol (yperez@ebi.ac.uk) - EMBL-EBI
+  - Deepti Jaiswal Kundu (jaiswal@ebi.ac.uk) - EMBL-EBI
+  - Nithu Sara John (nithu@ebi.ac.uk) - EMBL-EBI
+  - Nandana Madhusoodanan (nandana@ebi.ac.uk) - EMBL-EBI
+  - Asier Larrea (alarre@ebi.ac.uk) - EMBL-EBI
+  - Toan Phung (TPhung001@dundee.ac.uk) - University of Dundee
+  - Timo Sachsenberg (timo.sachsenberg@uni-tuebingen.de) - University of Tübingen
 version: 1.1.0
 usable_alone: false
 validators:
@@ -19,18 +44,21 @@ validators:
         - assay name
 columns:
   - name: source name
+    ontology_accession: PRIDE:0000623
     description: Unique identifier for the biological sample
     requirement: required
     allow_not_applicable: false
     allow_not_available: false
 
   - name: assay name
+    ontology_accession: NCIT:C178857
     description: Unique identifier for the data acquisition run
     requirement: required
     allow_not_applicable: false
     allow_not_available: false
 
   - name: technology type
+    ontology_accession: PRIDE:0000663
     description: Type of technology used
     requirement: required
     allow_not_applicable: false
@@ -46,6 +74,7 @@ columns:
             - protein expression profiling by aptamer array
 
   - name: comment[technical replicate]
+    ontology_accession: MS:1001808
     description: Identifier for the technical replicate (integer starting from 1)
     requirement: required
     type: integer
@@ -53,6 +82,7 @@ columns:
     allow_not_available: false
 
   - name: comment[data file]
+    ontology_accession: MS:1003083
     description: Name of the raw data file
     requirement: required
     allow_not_applicable: false
