@@ -1,5 +1,30 @@
 name: base
-description: Base SDRF template with shared columns inherited by all proteomics templates. This is a construction artifact and cannot be used directly - use ms-proteomics or affinity-proteomics instead.
+description: Base SDRF template with infrastructure columns (identifiers, data files, versioning) inherited by all proteomics templates. This is a construction artifact and cannot be used directly.
+documentation: |
+  The base template provides the foundational columns inherited by every SDRF file.
+  It is never used directly — all other templates inherit from it through sample-metadata.
+
+  Key conventions:
+  - `source name` must be unique per biological sample across the entire SDRF file.
+  - `assay name` must be unique per data acquisition run.
+  - `comment[data file]` must exactly match the filename deposited in the data repository.
+  - `comment[technical replicate]` starts at 1 for each biological sample.
+  - `comment[sdrf template]` records which templates were combined, using format
+    `NT=template_name;VV=vX.Y.Z` or `template_name vX.Y.Z`.
+
+  Validation rules enforced at this level:
+  - No trailing whitespace in any cell.
+  - No empty cells allowed.
+  - The combination of source name + assay name must be unique (no duplicate rows).
+  - Column order must follow the template definition order.
+contributors:
+  - Yasset Perez-Riverol (yperez@ebi.ac.uk) - EMBL-EBI
+  - Deepti Jaiswal Kundu (jaiswal@ebi.ac.uk) - EMBL-EBI
+  - Nithu Sara John (nithu@ebi.ac.uk) - EMBL-EBI
+  - Nandana Madhusoodanan (nandana@ebi.ac.uk) - EMBL-EBI
+  - Asier Larrea (alarre@ebi.ac.uk) - EMBL-EBI
+  - Toan Phung (TPhung001@dundee.ac.uk) - University of Dundee
+  - Timo Sachsenberg (timo.sachsenberg@uni-tuebingen.de) - University of Tübingen
 version: 1.1.0
 usable_alone: false
 validators:
@@ -19,93 +44,21 @@ validators:
         - assay name
 columns:
   - name: source name
+    ontology_accession: PRIDE:0000623
     description: Unique identifier for the biological sample
     requirement: required
     allow_not_applicable: false
     allow_not_available: false
 
-  - name: characteristics[organism]
-    description: Species of the sample using NCBI Taxonomy
-    requirement: required
-    allow_not_applicable: true
-    allow_not_available: false
-    validators:
-      - validator_name: ontology
-        params:
-          ontologies:
-            - ncbitaxon
-          error_level: error
-          description: The organism should be a valid NCBI Taxonomy term
-          examples:
-            - homo sapiens
-            - mus musculus
-            - rattus norvegicus
-            - saccharomyces cerevisiae
-
-  - name: characteristics[organism part]
-    description: Anatomical part of the organism from which sample was derived
-    requirement: required
-    cardinality: multiple
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: ontology
-        params:
-          ontologies:
-            - uberon
-            - bto
-          error_level: warning
-          description: The organism part should be a valid UBERON or BTO term
-          examples:
-            - liver
-            - brain
-            - heart
-            - blood
-
-  - name: characteristics[cell type]
-    description: Cell type of the sample
-    requirement: recommended
-    cardinality: multiple
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: ontology
-        params:
-          ontologies:
-            - cl
-            - bto
-            - clo
-          error_level: warning
-          description: The cell type should be a valid Cell Ontology (CL), BRENDA Tissue Ontology (BTO), or Cell Line Ontology (CLO) term
-          examples:
-            - hepatocyte
-            - neuron
-            - fibroblast
-            - T cell
-
-  - name: characteristics[biological replicate]
-    description: Identifier for the biological replicate (integer starting from 1, or 'pooled' for pooled samples)
-    requirement: required
-    allow_not_applicable: false
-    allow_not_available: false
-    allow_pooled: true
-    validators:
-      - validator_name: pattern
-        params:
-          pattern: ^\d+$|^pooled$
-          description: Biological replicate should be an integer or 'pooled' for pooled reference samples
-          examples:
-            - 1
-            - 2
-            - pooled
-
   - name: assay name
+    ontology_accession: NCIT:C178857
     description: Unique identifier for the data acquisition run
     requirement: required
     allow_not_applicable: false
     allow_not_available: false
 
   - name: technology type
+    ontology_accession: PRIDE:0000663
     description: Type of technology used
     requirement: required
     allow_not_applicable: false
@@ -120,55 +73,45 @@ columns:
             - protein expression profiling by antibody array
             - protein expression profiling by aptamer array
 
-  - name: comment[instrument]
-    description: Instrument used for data acquisition (MS instrument or affinity platform)
-    requirement: required
-    cardinality: multiple
-    allow_not_applicable: false
-    allow_not_available: false
-    validators:
-      - validator_name: ontology
-        params:
-          ontologies:
-            - ms
-            - pride
-          error_level: warning
-          description: The instrument should be a valid MS or PRIDE ontology term
-
   - name: comment[technical replicate]
+    ontology_accession: MS:1001808
     description: Identifier for the technical replicate (integer starting from 1)
-    requirement: recommended
+    requirement: required
     type: integer
     allow_not_applicable: false
     allow_not_available: false
 
   - name: comment[data file]
+    ontology_accession: MS:1003083
     description: Name of the raw data file
     requirement: required
     allow_not_applicable: false
     allow_not_available: false
 
   - name: comment[sdrf version]
+    ontology_accession: PRIDE:0000839
     description: Version of the SDRF-Proteomics specification used to annotate this file
     requirement: recommended
     allow_not_applicable: false
     allow_not_available: false
     validators:
-      - validator_name: pattern
+      - validator_name: semver
         params:
-          pattern: ^v\d+\.\d+\.\d+(-[\w.]+)?$
-          description: SDRF version should follow semantic versioning format (e.g., v1.1.0)
+          prefix: "v"
+          allow_prerelease: true
+          error_level: error
+          description: SDRF specification version
           examples:
             - v1.1.0
-            - v1.0.0
             - v2.0.0-dev
 
   - name: comment[sdrf template]
+    ontology_accession: PRIDE:0000832
     description: Template name and version used for annotation. Two formats are supported - key=value format (NT=template_name;VV=vX.Y.Z) or simple format (template_name vX.Y.Z). Multiple templates can be specified using multiple columns.
     requirement: optional
     cardinality: multiple
     allow_not_applicable: false
-    allow_not_available: false
+    allow_not_available: true
     validators:
       - validator_name: pattern
         params:
@@ -181,10 +124,11 @@ columns:
             - ms-proteomics v1.1.0
 
   - name: comment[sdrf annotation tool]
+    ontology_accession: PRIDE:0000840
     description: Software tool or method used to generate or annotate the SDRF file. Two formats are supported - key=value format (NT=tool_name;VV=vX.Y.Z) or simple format (tool_name vX.Y.Z).
     requirement: optional
     allow_not_applicable: false
-    allow_not_available: false
+    allow_not_available: true
     validators:
       - validator_name: pattern
         params:
@@ -197,19 +141,13 @@ columns:
             - sdrf-pipelines v1.0.0
             - manual curation
 
-  - name: comment[modification parameters]
-    description: Post-translational modifications searched
-    requirement: recommended
-    cardinality: multiple
+  - name: comment[sdrf validation hash]
+    description: Hash value for SDRF validation integrity checking
+    requirement: optional
     allow_not_applicable: true
     allow_not_available: true
     validators:
-      - validator_name: ontology
+      - validator_name: pattern
         params:
-          ontologies:
-            - unimod
-          error_level: warning
-          description: The modification parameters should be valid Unimod terms
-          examples:
-            - NT=Oxidation;MT=Variable;TA=M;AC=Unimod:35
-            - NT=Carbamidomethyl;TA=C;MT=fixed;AC=UNIMOD:4
+          pattern: ^.+$
+          description: Validation hash string

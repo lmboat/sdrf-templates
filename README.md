@@ -54,11 +54,15 @@ def load_template(name: str, version: str = None) -> dict:
 
 Templates use an `extends` field to inherit columns from parent templates:
 
-- `base` - Core columns shared by all templates
-- `ms-proteomics` extends `base` - Mass spectrometry columns
-- `affinity-proteomics` extends `base` - Affinity assay columns
-- `human` extends `base` - Human sample columns
-- `dda-acquisition` extends `ms-proteomics` - DDA-specific columns
+- `base` - Infrastructure columns (source name, assay name, technology type, etc.)
+- `sample-metadata` extends `base` - Sample-level columns shared by all templates (organism, organism part, cell type, biological replicate, pooled sample, disease, biosample accession)
+- `ms-proteomics` extends `sample-metadata` - Mass spectrometry columns
+- `affinity-proteomics` extends `sample-metadata` - Affinity assay columns
+- `human` extends `sample-metadata` - Human sample columns
+- `vertebrates` extends `sample-metadata` - Non-human vertebrate columns
+- `invertebrates` extends `sample-metadata` - Invertebrate columns
+- `plants` extends `sample-metadata` - Plant columns
+- `dia-acquisition` extends `ms-proteomics` - DIA-specific columns
 
 ## Adding a New Version
 

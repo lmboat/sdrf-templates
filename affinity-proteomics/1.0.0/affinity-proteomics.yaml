@@ -1,0 +1,205 @@
+name: affinity-proteomics
+description: SDRF template for affinity-based proteomics experiments (Olink, SomaScan). This is the base template for all affinity proteomics experiments.
+documentation: |
+  The affinity-proteomics template is one of two usable-alone technology templates. It covers
+  antibody-based (Olink PEA) and aptamer-based (SomaScan) proteomics platforms.
+
+  Use this template directly for generic affinity experiments, or combine with olink/somascan
+  for platform-specific columns. Always combine with an organism template.
+
+  Key differences from ms-proteomics:
+  - No sample preparation chemistry columns (no digestion, reduction, alkylation).
+  - `technology type` must be `protein expression profiling by antibody array` (Olink)
+    or `protein expression profiling by aptamer array` (SomaScan).
+  - `comment[platform]` identifies the specific instrument/platform.
+  - `comment[panel name]` and `comment[panel version]` track the commercial panel used.
+  - `comment[quantification unit]`: NPX for Olink, RFU for SomaScan.
+  - `comment[sample matrix]`: The biological fluid analyzed (serum, plasma, CSF, etc.).
+  - `comment[normalization method]`: How data was normalized (plate control, bridge, etc.).
+
+  Mutually exclusive with ms-proteomics.
+contributors:
+  - Yasset Perez-Riverol (yperez@ebi.ac.uk) - EMBL-EBI
+  - Deepti Jaiswal Kundu (jaiswal@ebi.ac.uk) - EMBL-EBI
+  - Nithu Sara John (nithu@ebi.ac.uk) - EMBL-EBI
+  - Nandana Madhusoodanan (nandana@ebi.ac.uk) - EMBL-EBI
+  - Asier Larrea (alarre@ebi.ac.uk) - EMBL-EBI
+  - Toan Phung (TPhung001@dundee.ac.uk) - University of Dundee
+  - Timo Sachsenberg (timo.sachsenberg@uni-tuebingen.de) - University of Tübingen
+  - Magnus Palmblad (n.m.palmblad@lumc.nl) - Leiden University Medical Center
+version: 1.0.0
+extends: sample-metadata
+usable_alone: true
+layer: technology
+mutually_exclusive_with:
+  - ms-proteomics
+validators:
+  - validator_name: min_columns
+    params:
+      min_columns: 8
+columns:
+  - name: technology type
+    ontology_accession: PRIDE:0000663
+    description: Type of technology used
+    requirement: required
+    allow_not_applicable: false
+    allow_not_available: false
+    validators:
+      - validator_name: single_cardinality_validator
+        params: {}
+      - validator_name: values
+        params:
+          values:
+            - protein expression profiling by antibody array
+            - protein expression profiling by aptamer array
+
+  - name: comment[platform]
+    description: Affinity proteomics platform used (e.g. Olink Explore HT, SomaScan Assay 7K)
+    requirement: required
+    allow_not_applicable: false
+    allow_not_available: false
+    validators:
+      - validator_name: single_cardinality_validator
+        params: {}
+      - validator_name: ontology
+        params:
+          ontologies:
+            - pride
+          error_level: error
+          description: The platform should be a valid PRIDE ontology term for affinity platforms
+          examples:
+            - Olink Explore HT
+            - Olink Target 96
+            - SomaScan Assay 11K
+
+  - name: comment[instrument]
+    ontology_accession: MS:1000031
+    description: Instrument used for data acquisition (e.g. sequencer, qPCR machine, microarray reader)
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: ontology
+        params:
+          ontologies:
+            - ms
+            - pride
+          error_level: warning
+          description: The instrument should be a valid PSI-MS ontology term
+          examples:
+            - Illumina NovaSeq X
+            - Illumina NextSeq 2000
+            - Agilent SureScan Microarray Scanner
+
+  - name: comment[panel name]
+    description: Name of the commercial panel used
+    requirement: recommended
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: pattern
+        params:
+          pattern: ^.+$
+          description: Panel name
+          examples:
+            - Olink Explore 3072
+            - Olink Explore 1536
+            - Olink Target 96 Inflammation
+            - SomaScan 7K
+            - SomaScan 11K
+
+  - name: comment[panel version]
+    description: Version of the assay panel
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: pattern
+        params:
+          pattern: ^.+$
+          description: Panel version
+          examples:
+            - v4.1
+            - 2023-01
+            - 7K v4.1
+
+  - name: comment[quantification unit]
+    ontology_accession: PRIDE:0000392
+    description: Unit of quantification for the assay (platform-specific)
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: values
+        params:
+          values:
+            - NPX
+            - RFU
+          error_level: warning
+          description: Quantification unit
+
+  - name: comment[plate]
+    description: Plate identifier for batch effect analysis
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: pattern
+        params:
+          pattern: ^.+$
+          description: Plate identifier
+          examples:
+            - 1
+            - 2
+
+  - name: comment[sample matrix]
+    description: Type of biological matrix used as input (e.g. serum, plasma, CSF, urine)
+    requirement: recommended
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: ontology
+        params:
+          ontologies:
+            - uberon
+            - bto
+          error_level: warning
+          description: Sample matrix should be a valid UBERON or BTO term
+          examples:
+            - serum
+            - plasma
+            - cerebrospinal fluid
+            - urine
+            - saliva
+
+  - name: comment[normalization method]
+    description: Normalization method applied to quantification values
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: pattern
+        params:
+          pattern: ^.+$
+          description: Normalization method
+          examples:
+            - plate control normalized
+            - bridge normalized
+            - median normalization
+            - not normalized
+
+  - name: comment[fraction identifier]
+    ontology_accession: MS:1000858
+    description: Fraction or dilution series identifier. While fractionation is rare in affinity proteomics, dilution series are used in some protocols (e.g. SomaScan alternative matrix validation).
+    requirement: optional
+    allow_not_applicable: true
+    allow_not_available: true
+    validators:
+      - validator_name: pattern
+        params:
+          pattern: ^.+$
+          description: Fraction or dilution identifier
+          examples:
+            - 1
+            - 2
+            - 3

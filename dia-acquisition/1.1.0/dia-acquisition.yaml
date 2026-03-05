@@ -1,13 +1,52 @@
 name: dia-acquisition
 description: SDRF template for Data-independent acquisition (DIA) experiments. Extends ms-proteomics with DIA-specific columns.
+documentation: |
+  The dia-acquisition template restricts the acquisition method to Data-independent
+  acquisition and adds DIA-specific window parameters.
+
+  Key guidance:
+  - `comment[proteomics data acquisition method]`: Automatically restricted to
+    `Data-independent acquisition`. This is enforced by the template.
+  - `comment[scan window lower limit]` / `comment[scan window upper limit]`: The overall
+    m/z range of the DIA method (e.g., 400-1200 for a typical SWATH experiment).
+  - `comment[isolation window width]`: Width of individual isolation windows in m/z.
+    Common values: 25 (wide SWATH), 8 (narrow windows), 4 (high-resolution DIA).
+  - `comment[dia method]`: The specific DIA variant used. Common values:
+    SWATH-MS, diaPASEF (Bruker timsTOF), MSE (Waters), All ion fragmentation.
+
+  This template inherits all ms-proteomics columns (instrument, label, cleavage agent, etc.).
+  The ms-proteomics range columns (ms min/max mz, rt, im) are also relevant for DIA methods.
+contributors:
+  - Yasset Perez-Riverol (yperez@ebi.ac.uk) - EMBL-EBI
+  - Deepti Jaiswal Kundu (jaiswal@ebi.ac.uk) - EMBL-EBI
+  - Nithu Sara John (nithu@ebi.ac.uk) - EMBL-EBI
+  - Nandana Madhusoodanan (nandana@ebi.ac.uk) - EMBL-EBI
+  - Asier Larrea (alarre@ebi.ac.uk) - EMBL-EBI
+  - Toan Phung (TPhung001@dundee.ac.uk) - University of Dundee
+  - Timo Sachsenberg (timo.sachsenberg@uni-tuebingen.de) - University of Tübingen
 version: 1.1.0
 extends: ms-proteomics
 usable_alone: false
 layer: experiment
-mutually_exclusive_with:
-  - dda-acquisition
 columns:
+  - name: comment[proteomics data acquisition method]
+    ontology_accession: PRIDE:0000659
+    description: Mass spectrometry acquisition method (restricted to DIA for this template)
+    requirement: required
+    allow_not_applicable: false
+    allow_not_available: false
+    validators:
+      - validator_name: single_cardinality_validator
+        params: {}
+      - validator_name: values
+        params:
+          values:
+            - Data-independent acquisition
+          error_level: error
+          description: This template requires Data-independent acquisition
+
   - name: comment[scan window lower limit]
+    ontology_accession: MS:1000501
     description: Lower m/z limit of the DIA scan window
     requirement: recommended
     allow_not_applicable: true
@@ -22,6 +61,7 @@ columns:
             - 350.5
 
   - name: comment[scan window upper limit]
+    ontology_accession: MS:1000500
     description: Upper m/z limit of the DIA scan window
     requirement: recommended
     allow_not_applicable: true
@@ -33,9 +73,10 @@ columns:
           description: m/z value as a number
           examples:
             - 1200
-            - 1000.5
+            - 1000
 
   - name: comment[isolation window width]
+    ontology_accession: MS:1000792
     description: Width of the isolation window in m/z units
     requirement: recommended
     allow_not_applicable: true
@@ -50,104 +91,8 @@ columns:
             - 8
             - 4
 
-  - name: comment[collision energy]
-    description: Collision energy or stepped collision energies used
-    requirement: optional
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: pattern
-        params:
-          pattern: ^\d+(\.\d+)?%? (NCE|eV)(;\d+(\.\d+)?%? (NCE|eV))*$|^not available$
-          description: "Collision energy format: {value} {unit} where value is a number optionally followed by %, and unit is NCE or eV. For stepped collision energies, use semicolon-separated values each with their own unit."
-          examples:
-            - 30 NCE
-            - 30% NCE
-            - 27 eV
-            - 25 NCE;27 NCE;30 NCE
-            - 25% NCE;27% NCE;30% NCE
-            - not available
-
-  - name: comment[modification parameters]
-    description: Post-translational modifications searched
-    requirement: recommended
-    cardinality: multiple
-    allow_not_applicable: false
-    allow_not_available: true
-    validators:
-      - validator_name: ontology
-        params:
-          ontologies:
-            - unimod
-          error_level: warning
-          description: The modification parameters should be valid Unimod terms
-          examples:
-            - NT=Oxidation;MT=Variable;TA=M;AC=Unimod:35
-            - NT=Carbamidomethyl;TA=C;MT=fixed;AC=UNIMOD:4
-
-  - name: comment[precursor mass tolerance]
-    description: Precursor mass tolerance for DIA analysis
-    requirement: optional
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: pattern
-        params:
-          pattern: ^\d+(\.\d+)?\s*(ppm|Da)$
-          description: Mass tolerance with unit
-          examples:
-            - 10 ppm
-            - 20 ppm
-
-  - name: comment[fragment mass tolerance]
-    description: Fragment mass tolerance for DIA analysis
-    requirement: optional
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: pattern
-        params:
-          pattern: ^\d+(\.\d+)?\s*(ppm|Da)$
-          description: Mass tolerance with unit
-          examples:
-            - 20 ppm
-            - 0.02 Da
-
-  - name: comment[dissociation method]
-    description: Fragmentation method used
-    requirement: optional
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: ontology
-        params:
-          ontologies:
-            - ms
-          error_level: warning
-          description: Should be a valid MS ontology term for dissociation
-          examples:
-            - HCD
-            - CID
-            - ETD
-
-  - name: comment[MS2 mass analyzer]
-    description: Mass analyzer used for MS2 acquisition
-    requirement: optional
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: ontology
-        params:
-          ontologies:
-            - ms
-          error_level: warning
-          description: Should be a valid MS ontology term
-          examples:
-            - orbitrap
-            - TOF
-            - ion trap
-
-  - name: comment[DIA method]
+  - name: comment[dia method]
+    ontology_accession: PRIDE:0000450
     description: Specific DIA method variant used
     requirement: recommended
     allow_not_applicable: true

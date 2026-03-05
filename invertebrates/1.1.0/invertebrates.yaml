@@ -1,7 +1,28 @@
 name: invertebrates
 description: SDRF template for invertebrate samples (Drosophila, C. elegans, insects, etc.). Must be combined with a technology template (ms-proteomics or affinity-proteomics).
+documentation: |
+  The invertebrates template covers Drosophila, C. elegans, insects, and other arthropods.
+
+  Key guidance:
+  - `characteristics[strain or breed]`: Required. Use standard strain names
+    (Oregon-R, w1118, Canton-S for Drosophila; N2, Bristol for C. elegans).
+  - `characteristics[developmental stage]`: Required. Use organism-specific ontologies:
+    FBdv for Drosophila, WBls for C. elegans, or general EFO/UBERON terms.
+  - `characteristics[genotype]`: Optional. Use standard genetic notation
+    (wild type, daf-2(e1370), w[*]; P{GAL4}).
+  - `characteristics[disease]`: Required.
+
+  Mutually exclusive with human, vertebrates, and plants.
+contributors:
+  - Yasset Perez-Riverol (yperez@ebi.ac.uk) - EMBL-EBI
+  - Deepti Jaiswal Kundu (jaiswal@ebi.ac.uk) - EMBL-EBI
+  - Nithu Sara John (nithu@ebi.ac.uk) - EMBL-EBI
+  - Nandana Madhusoodanan (nandana@ebi.ac.uk) - EMBL-EBI
+  - Asier Larrea (alarre@ebi.ac.uk) - EMBL-EBI
+  - Toan Phung (TPhung001@dundee.ac.uk) - University of Dundee
+  - Timo Sachsenberg (timo.sachsenberg@uni-tuebingen.de) - University of Tübingen
 version: 1.1.0
-extends: base
+extends: sample-metadata
 usable_alone: false
 layer: sample
 mutually_exclusive_with:
@@ -10,7 +31,12 @@ mutually_exclusive_with:
   - plants
 columns:
   - name: characteristics[disease]
-    description: Disease state of the sample
+    ontology_accession: EFO:0000408
+    requirement: required
+
+  - name: characteristics[developmental stage]
+    ontology_accession: EFO:0000399
+    description: Developmental stage of the organism
     requirement: required
     allow_not_applicable: true
     allow_not_available: true
@@ -18,42 +44,19 @@ columns:
       - validator_name: ontology
         params:
           ontologies:
-            - mondo
             - efo
-            - doid
-            - pato
           error_level: warning
-          description: The disease should be a valid MONDO, EFO, DOID, or PATO ontology term. Use 'normal' (PATO:0000461) for healthy samples.
-          examples:
-            - normal
-            - breast cancer
-            - diabetes mellitus
-            - Alzheimer disease
-
-  - name: characteristics[developmental stage]
-    description: Developmental stage of the organism
-    requirement: recommended
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: ontology
-        params:
-          ontologies:
-            - fbdv
-            - wbls
-            - efo
-            - uberon
-          error_level: warning
-          description: The developmental stage should be a valid ontology term (FBdv for Drosophila, WBls for C. elegans)
+          description: The developmental stage should be a valid EFO ontology term
           examples:
             - adult stage
             - larval stage
             - pupal stage
             - embryonic stage
 
-  - name: characteristics[strain/breed]
+  - name: characteristics[strain or breed]
+    ontology_accession: GENO:0000112
     description: Strain of the organism
-    requirement: optional
+    requirement: required
     allow_not_applicable: true
     allow_not_available: true
     validators:
@@ -70,6 +73,7 @@ columns:
             - Canton-S
 
   - name: characteristics[genotype]
+    ontology_accession: EFO:0000513
     description: Genotype of the organism
     requirement: optional
     allow_not_applicable: true
@@ -83,3 +87,4 @@ columns:
             - wild type
             - daf-2(e1370)
             - w[*]; P{GAL4}
+

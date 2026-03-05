@@ -1,7 +1,32 @@
 name: human
 description: Human SDRF template with human-specific sample metadata fields. Must be combined with a technology template (ms-proteomics or affinity-proteomics).
+documentation: |
+  The human template adds demographic and individual-level tracking columns for Homo sapiens
+  samples. It overrides `characteristics[disease]` to required and adds age, sex, ancestry,
+  and individual identifiers.
+
+  Key guidance:
+  - `characteristics[age]`: Strict format with Y>M>W>D order. Examples: `45Y`, `6M`,
+    `30Y6M`, `40Y-50Y`. Use `anonymized` when age is protected, `pooled` for pooled samples.
+  - `characteristics[sex]`: Required. Values: `male`, `female`, `intersex`.
+  - `characteristics[individual]`: Recommended for longitudinal, matched (tumor/normal), or
+    multi-sample designs. Use consistent identifiers across all samples from the same donor.
+  - `characteristics[ancestry category]`: HANCESTRO terms (European, African, East Asian,
+    Hispanic or Latin American, etc.). Recommended for population studies.
+  - `characteristics[developmental stage]`: EFO terms (adult, fetal stage, etc.).
+
+  Add clinical-metadata for treatment studies, oncology-metadata for cancer studies,
+  cell-lines for cultured human cell lines.
+contributors:
+  - Yasset Perez-Riverol (yperez@ebi.ac.uk) - EMBL-EBI
+  - Deepti Jaiswal Kundu (jaiswal@ebi.ac.uk) - EMBL-EBI
+  - Nithu Sara John (nithu@ebi.ac.uk) - EMBL-EBI
+  - Nandana Madhusoodanan (nandana@ebi.ac.uk) - EMBL-EBI
+  - Asier Larrea (alarre@ebi.ac.uk) - EMBL-EBI
+  - Toan Phung (TPhung001@dundee.ac.uk) - University of Dundee
+  - Timo Sachsenberg (timo.sachsenberg@uni-tuebingen.de) - University of Tübingen
 version: 1.1.0
-extends: base
+extends: sample-metadata
 usable_alone: false
 layer: sample
 mutually_exclusive_with:
@@ -10,27 +35,11 @@ mutually_exclusive_with:
   - plants
 columns:
   - name: characteristics[disease]
-    description: Disease state of the sample
+    ontology_accession: EFO:0000408
     requirement: required
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: ontology
-        params:
-          ontologies:
-            - mondo
-            - efo
-            - doid
-            - pato
-          error_level: warning
-          description: The disease should be a valid MONDO, EFO, DOID, or PATO ontology term. Use 'normal' (PATO:0000461) for healthy samples.
-          examples:
-            - normal
-            - breast cancer
-            - diabetes mellitus
-            - Alzheimer disease
 
   - name: characteristics[ancestry category]
+    ontology_accession: HANCESTRO:0004
     description: Ancestry or ethnic background of the donor
     requirement: recommended
     allow_not_applicable: true
@@ -40,9 +49,8 @@ columns:
         params:
           ontologies:
             - hancestro
-            - efo
           error_level: warning
-          description: The ancestry category should be a valid HANCESTRO or EFO ontology term
+          description: The ancestry category should be a valid HANCESTRO ontology term
           examples:
             - European
             - African
@@ -50,8 +58,9 @@ columns:
             - Hispanic or Latin American
 
   - name: characteristics[age]
+    ontology_accession: EFO:0000246
     description: Age of the donor at sample collection
-    requirement: recommended
+    requirement: required
     allow_not_applicable: false
     allow_not_available: true
     allow_anonymized: true
@@ -59,24 +68,28 @@ columns:
     validators:
       - validator_name: pattern
         params:
-          # Age format: number + unit (Y/M/D), optionally combined, with optional range
-          # Examples: 45Y, 6M, 30Y6M, 30Y6M15D, 40Y-50Y, 1Y-2Y6M
-          # Also allows "not available", "anonymized", or "pooled"
-          pattern: ^(\d+[yYmMdD](\d+[yYmMdD])*(-\d+[yYmMdD](\d+[yYmMdD])*)?|not available|anonymized|pooled)$
+          # Age format: optional comparison operator + number + unit in strict Y>M>W>D order, with optional range
+          # Examples: 45Y, 6M, 3W, 14D, 30Y6M, 6M2W, 40Y-50Y, 6M-12M, >18Y, >=21Y, <65Y
+          pattern: ^(>=?|<=?)?(\d+[Yy](\d+[Mm](\d+[Ww](\d+[Dd])?)?)?|\d+[Mm](\d+[Ww](\d+[Dd])?)?|\d+[Ww](\d+[Dd])?|\d+[Dd])(-((\d+[Yy](\d+[Mm](\d+[Ww](\d+[Dd])?)?)?|\d+[Mm](\d+[Ww](\d+[Dd])?)?|\d+[Ww](\d+[Dd])?|\d+[Dd])))?$
           case_sensitive: false
-          description: Age should be in format like 45Y, 6M, 30Y6M, or ranges like 40Y-50Y. Use "not available" if unknown, "anonymized" if redacted, or "pooled" for pooled samples.
+          description: "Age format: 45Y, 6M, 30Y6M (Y>M>W>D order), ranges like 40Y-50Y, or comparison operators like >18Y, >=21Y, <65Y. Use \"not available\" if unknown, \"anonymized\" if redacted, or \"pooled\" for pooled samples."
           examples:
             - 45Y
             - 6M
             - 30Y6M
+            - 30Y6M2W
             - 40Y-50Y
+            - ">18Y"
+            - ">=21Y"
+            - "<65Y"
             - not available
             - anonymized
             - pooled
 
   - name: characteristics[sex]
+    ontology_accession: PATO:0000047
     description: Biological sex of the donor
-    requirement: recommended
+    requirement: required
     allow_not_applicable: true
     allow_not_available: true
     allow_anonymized: true
@@ -88,14 +101,11 @@ columns:
             - male
             - female
             - intersex
-            - not available
-            - not applicable
-            - anonymized
-            - pooled
           error_level: error
-          description: Sex should be one of the allowed values. Use "anonymized" if redacted or "pooled" for pooled samples.
+          description: Sex should be one of the allowed values.
 
   - name: characteristics[developmental stage]
+    ontology_accession: EFO:0000399
     description: Developmental stage of the donor
     requirement: optional
     allow_not_applicable: true
@@ -104,10 +114,9 @@ columns:
       - validator_name: ontology
         params:
           ontologies:
-            - hsapdv
             - efo
           error_level: warning
-          description: The developmental stage should be a valid HsapDv or EFO ontology term
+          description: The developmental stage should be a valid EFO ontology term
           examples:
             - adult
             - embryonic stage
@@ -115,6 +124,7 @@ columns:
             - infant stage
 
   - name: characteristics[individual]
+    ontology_accession: EFO:0000542
     description: Unique identifier for the donor individual
     requirement: recommended
     allow_not_applicable: true
@@ -122,13 +132,15 @@ columns:
     allow_anonymized: true
     allow_pooled: true
     validators:
-      - validator_name: pattern
+      - validator_name: identifier
         params:
-          pattern: ^([A-Za-z0-9_-]+|not applicable|not available|anonymized|pooled)$
-          description: Individual ID should be alphanumeric with underscores or hyphens. Use "anonymized" if redacted or "pooled" for pooled samples.
+          special_values: [anonymized, pooled]
+          error_level: error
+          description: Patient or individual identifier
           examples:
             - patient_001
             - donor-A1
             - subject_12
             - anonymized
             - pooled
+

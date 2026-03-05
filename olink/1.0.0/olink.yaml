@@ -1,5 +1,32 @@
 name: olink
 description: SDRF template for Olink Proximity Extension Assay (PEA) experiments. Extends affinity-proteomics with Olink-specific columns.
+documentation: |
+  The olink template captures Proximity Extension Assay (PEA) specific metadata for
+  Olink experiments. PEA uses paired antibodies with oligonucleotide tags — binding
+  events are detected via qPCR or sequencing.
+
+  Key guidance:
+  - `comment[olink panel]`: Required. The specific panel used (Target 96 Inflammation,
+    Explore 384 Cardiometabolic, Explore 1536, Explore 3072).
+  - `comment[olink platform]`: Required. The platform version (Olink Target 96,
+    Olink Explore 384, Olink Explore HT, Olink Reveal).
+  - `comment[npx normalization]`: Recommended. How NPX values were normalized
+    (plate control normalized, intensity normalized, bridge normalized, not normalized).
+  - `comment[olink lot number]`: Optional. Reagent lot for traceability.
+  - Inherited from affinity-proteomics: `comment[sample matrix]` (serum, plasma, CSF),
+    `comment[quantification unit]` (NPX), `comment[normalization method]`.
+
+  Olink data uses Normalized Protein eXpression (NPX) units on a log2 scale.
+  Mutually exclusive with somascan.
+contributors:
+  - Yasset Perez-Riverol (yperez@ebi.ac.uk) - EMBL-EBI
+  - Deepti Jaiswal Kundu (jaiswal@ebi.ac.uk) - EMBL-EBI
+  - Nithu Sara John (nithu@ebi.ac.uk) - EMBL-EBI
+  - Nandana Madhusoodanan (nandana@ebi.ac.uk) - EMBL-EBI
+  - Asier Larrea (alarre@ebi.ac.uk) - EMBL-EBI
+  - Toan Phung (TPhung001@dundee.ac.uk) - University of Dundee
+  - Timo Sachsenberg (timo.sachsenberg@uni-tuebingen.de) - University of Tübingen
+  - Magnus Palmblad (n.m.palmblad@lumc.nl) - Leiden University Medical Center
 version: 1.0.0
 extends: affinity-proteomics
 usable_alone: false
@@ -25,7 +52,7 @@ columns:
             - Explore 3072
 
   - name: comment[olink platform]
-    description: Olink instrument/platform version
+    description: Olink platform version
     requirement: required
     allow_not_applicable: false
     allow_not_available: false
@@ -36,13 +63,11 @@ columns:
             - Olink Target 96
             - Olink Explore 384
             - Olink Explore HT
-            - Olink Signature Q100
-            - Olink Flex
             - Olink Reveal
           error_level: warning
           description: Olink platform
 
-  - name: comment[NPX normalization]
+  - name: comment[npx normalization]
     description: Normalization method applied to NPX values
     requirement: recommended
     allow_not_applicable: true
@@ -55,25 +80,8 @@ columns:
             - intensity normalized
             - bridge normalized
             - not normalized
-            - not available
           error_level: warning
           description: NPX normalization method
-
-  - name: comment[QC warning]
-    description: Quality control warnings if any
-    requirement: optional
-    allow_not_applicable: true
-    allow_not_available: true
-    validators:
-      - validator_name: pattern
-        params:
-          pattern: ^.+$
-          description: QC warning message
-          examples:
-            - QC pass
-            - below LOD
-            - plate effect warning
-            - assay warning
 
   - name: comment[olink lot number]
     description: Reagent lot number for traceability
