@@ -8,7 +8,6 @@ Versioned templates and validation rules for SDRF-Proteomics.
 {template-name}/
   {version}/
     {template-name}.yaml      # Validation rules and column definitions
-    {template-name}.sdrf.tsv  # Example template file
 ```
 
 ## Manifest
@@ -68,9 +67,8 @@ Templates use an `extends` field to inherit columns from parent templates:
 
 1. Create a new version directory: `{template-name}/{new-version}/`
 2. Add `{template-name}.yaml` with updated `version` field
-3. Add `{template-name}.sdrf.tsv` example file
-4. Submit PR to master
-5. Manifest will auto-update on merge
+3. Submit PR to master
+4. Manifest will auto-update on merge
 
 ## Repositories Using This
 
